@@ -240,6 +240,7 @@
         scrollZoom: false, dragRotate: false, pitchWithRotate: false, attributionControl: { compact: true }
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
+      mapEl.__map = map;   // handy for debugging zoomed views
       map.touchZoomRotate.disableRotation();
       // fit the zone once the map knows its real size, and again whenever the layout changes
       var fit = function () {
