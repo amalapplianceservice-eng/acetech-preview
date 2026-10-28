@@ -2072,3 +2072,6 @@ a.ct-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(26,2
 .nf-link { aspect-ratio: auto; padding: 12px 18px; background: rgba(255,255,255,.1); border-radius: 999px; box-shadow: none; }
 .nf-link::after { display: none; }
 .nf-link .sv-more-name { position: static; font-size: .9rem; text-transform: none; }
+.footer-alt { color: rgba(255,255,255,.5); font-size: .85rem; }
+/* contact cards: 5 cards -> hours card spans the full row */
+.ct-cards .ct-hours { grid-column: 1 / -1; }
