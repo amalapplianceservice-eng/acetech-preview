@@ -214,7 +214,7 @@
       },
       layers: [{ id: 'base', type: 'raster', source: 'base' }, { id: 'labels', type: 'raster', source: 'labels' }]
     };
-    var bounds = [[-122.5, 37.62], [-120.92, 38.98]];
+    var bounds = [[-122.45, 37.62], [-121.08, 38.8]];
 
     var addZone = function (map) {
       fetch('/acetech-preview/assets/service-area.geojson').then(function (r) { return r.json(); }).then(function (gj) {
@@ -241,7 +241,15 @@
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
       map.touchZoomRotate.disableRotation();
+      // fit the zone once the map knows its real size, and again whenever the layout changes
+      var fit = function () {
+        var w = mapEl.clientWidth, pad = w < 520 ? 12 : 30;
+        map.resize();
+        map.fitBounds(bounds, { padding: { top: pad, bottom: pad + 40, left: pad, right: pad }, animate: false });
+      };
+      window.addEventListener('resize', fit);
       map.on('load', function () {
+        fit();
         addZone(map);
         // keep the required map credit collapsed behind the small "i" button
         var attr = mapEl.querySelector('.maplibregl-ctrl-attrib');
