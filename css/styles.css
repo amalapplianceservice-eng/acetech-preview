@@ -2075,3 +2075,5 @@ a.ct-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px rgba(26,2
 .footer-alt { color: rgba(255,255,255,.5); font-size: .85rem; }
 /* contact cards: 5 cards -> hours card spans the full row */
 .ct-cards .ct-hours { grid-column: 1 / -1; }
+/* phone numbers: equal-width digits so numbers line up */
+a[href^="tel:"], .footer-contact, .ct-card strong, .ct-hours b { font-variant-numeric: tabular-nums; }
