@@ -554,11 +554,11 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) closeLb(); });
   }
 
-  // "Open now / Closed" badge (Pacific time): Mon–Fri 8–18, Sat 8–13
+  // "Open now / Closed" badge (Pacific time): Mon–Fri 8–18, closed on weekends
   document.querySelectorAll('[data-open-status]').forEach(function (el) {
     var now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
     var d = now.getDay(), h = now.getHours() + now.getMinutes() / 60;
-    var open = (d >= 1 && d <= 5 && h >= 8 && h < 18) || (d === 6 && h >= 8 && h < 13);
+    var open = d >= 1 && d <= 5 && h >= 8 && h < 18;
     el.textContent = open ? 'Open now' : 'Closed now · we\u2019ll call back';
     el.classList.add(open ? 'is-open' : 'is-closed');
   });
