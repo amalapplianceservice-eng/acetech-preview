@@ -1819,6 +1819,13 @@ h1, h2, h3 { letter-spacing: -.02em; }
 .ab-hero-media { position: relative; justify-self: center; width: min(100%, 360px); perspective: 1100px; }
 .ab-portrait { aspect-ratio: 4 / 5; }
 .ab-portrait .tilt-inner img { object-position: 50% 30%; }
+.ab-linkedin {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: 22px;
+  padding: 11px 18px; border-radius: 999px; font-weight: 600; font-size: .95rem;
+  color: #fff; background: #0A66C2; text-decoration: none;
+  box-shadow: 0 10px 24px rgba(10,102,194,.28); transition: transform .2s, box-shadow .2s;
+}
+.ab-linkedin:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(10,102,194,.36); }
 .ab-hero-tag {
   position: absolute; right: -22px; top: 28px; padding: 10px 16px; border-radius: 14px;
   background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
