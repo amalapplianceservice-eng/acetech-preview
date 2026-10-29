@@ -651,6 +651,12 @@
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
+  // Phone clicks: same event as the old site (GTM -> GA4 CALL_LINK_EVENT)
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="tel:"]');
+    if (a && window.gtag) gtag('event', 'call_link', { app_name: 'AceTech', screen_name: 'Call Link' });
+  });
+
   // Booking modal — open from any link/button pointing to #book
   var bookingModal = document.getElementById('booking-modal');
   if (bookingModal) {
@@ -711,6 +717,8 @@
         .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
         .then(function (res) {
           if (res && res.ok) {
+            // same event name as the old site: GTM fires GA4 GET_A_QUOTE_DONE on it
+            if (window.gtag) gtag('event', 'form_get_quote_success', { app_name: 'AceTech' });
             btn.textContent = '✓ Request received!';
             form.reset();
             if (issueField) { issueField.hidden = true; }
