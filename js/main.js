@@ -651,10 +651,17 @@
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  // Phone clicks: same event as the old site (GTM -> GA4 CALL_LINK_EVENT)
+  // Yandex.Metrika goals (JS event goals: booking_open, booking_submit, phone_click)
+  var ymGoal = function (name) {
+    try { if (typeof window.ym === 'function') window.ym(114115058, 'reachGoal', name); } catch (err) { /* analytics must never break the page */ }
+  };
+
+  // Phone clicks: same event as the old site (GTM -> GA4 CALL_LINK_EVENT) + Metrika goal
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[href^="tel:"]');
-    if (a && window.gtag) gtag('event', 'call_link', { app_name: 'AceTech', screen_name: 'Call Link' });
+    if (!a) return;
+    if (window.gtag) gtag('event', 'call_link', { app_name: 'AceTech', screen_name: 'Call Link' });
+    ymGoal('phone_click');
   });
 
   // Booking modal — open from any link/button pointing to #book
@@ -662,6 +669,7 @@
   if (bookingModal) {
     var openModal = function (e) {
       if (e) e.preventDefault();
+      ymGoal('booking_open');
       bookingModal.hidden = false;
       document.documentElement.classList.add('no-scroll');
       var firstField = bookingModal.querySelector('input, select');
@@ -719,6 +727,7 @@
           if (res && res.ok) {
             // same event name as the old site: GTM fires GA4 GET_A_QUOTE_DONE on it
             if (window.gtag) gtag('event', 'form_get_quote_success', { app_name: 'AceTech' });
+            ymGoal('booking_submit');
             btn.textContent = '✓ Request received!';
             form.reset();
             if (issueField) { issueField.hidden = true; }
