@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 576" width="1024" height="576" font-family="Instrument Sans, Helvetica, Arial, sans-serif">
+  <title>How a microwave makes heat: the high-voltage chain from the outlet to the food</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F6FC"/><stop offset="1" stop-color="#E2E8F6"/></linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4570B3"/></marker>
+  </defs>
+  <rect width="1024" height="576" rx="28" fill="url(#bg)"/>
+  <text x="56" y="78" font-size="30" font-weight="700" fill="#30347D">How a microwave makes heat</text>
+  <text x="56" y="112" font-size="19" fill="#5a5f86">If any link in this chain fails, the turntable and light still work, but the food stays cold.</text>
+
+  <!-- low-voltage side -->
+  <rect x="56" y="150" width="440" height="34" rx="17" fill="#fff" stroke="#c9d3ec"/>
+  <text x="76" y="173" font-size="16" font-weight="600" fill="#4570B3" letter-spacing="1">LOW VOLTAGE · SAFE TO CHECK FROM OUTSIDE</text>
+  <rect x="528" y="150" width="440" height="34" rx="17" fill="#30347D"/>
+  <text x="548" y="173" font-size="16" font-weight="600" fill="#fff" letter-spacing="1">HIGH VOLTAGE · TECHNICIAN ONLY</text>
+
+  <g font-size="19" font-weight="700" fill="#30347D" text-anchor="middle">
+    <rect x="56" y="220" width="200" height="110" rx="18" fill="#fff" stroke="#c9d3ec"/>
+    <text x="156" y="268">Door switches</text>
+    <text x="156" y="294" font-size="15" font-weight="500" fill="#5a5f86">3 interlocks must close</text>
+
+    <rect x="296" y="220" width="200" height="110" rx="18" fill="#fff" stroke="#c9d3ec"/>
+    <text x="396" y="268">Control board</text>
+    <text x="396" y="294" font-size="15" font-weight="500" fill="#5a5f86">relay sends power on</text>
+
+    <rect x="528" y="220" width="200" height="110" rx="18" fill="#fff" stroke="#30347D" stroke-width="2"/>
+    <text x="628" y="268">HV transformer</text>
+    <text x="628" y="294" font-size="15" font-weight="500" fill="#5a5f86">120 V → ~2,000 V</text>
+
+    <rect x="768" y="220" width="200" height="110" rx="18" fill="#fff" stroke="#30347D" stroke-width="2"/>
+    <text x="868" y="258">Diode +</text>
+    <text x="868" y="282">capacitor</text>
+    <text x="868" y="308" font-size="15" font-weight="500" fill="#5a5f86">doubles the voltage</text>
+
+    <rect x="768" y="394" width="200" height="110" rx="18" fill="#30347D"/>
+    <text x="868" y="442" fill="#fff">Magnetron</text>
+    <text x="868" y="468" font-size="15" font-weight="500" fill="#c9d6f2">makes the microwaves</text>
+
+    <rect x="528" y="394" width="200" height="110" rx="18" fill="#fff" stroke="#30347D" stroke-width="2"/>
+    <text x="628" y="442">Waveguide</text>
+    <text x="628" y="468" font-size="15" font-weight="500" fill="#5a5f86">channels them inside</text>
+
+    <rect x="296" y="394" width="200" height="110" rx="18" fill="#7FA6DE"/>
+    <text x="396" y="442" fill="#22255C">Your food</text>
+    <text x="396" y="468" font-size="15" font-weight="500" fill="#22255C">water molecules heat up</text>
+  </g>
+
+  <g stroke="#4570B3" stroke-width="3" fill="none" marker-end="url(#ar)">
+    <path d="M258 275H290"/>
+    <path d="M498 275H522"/>
+    <path d="M730 275H762"/>
+    <path d="M868 332V388"/>
+    <path d="M766 449H734"/>
+    <path d="M526 449H502"/>
+  </g>
+  <text x="56" y="438" font-size="17" font-weight="700" fill="#30347D">The capacitor can</text>
+  <text x="56" y="462" font-size="17" font-weight="700" fill="#30347D">hold a lethal charge</text>
+  <text x="56" y="486" font-size="17" font-weight="700" fill="#30347D">after unplugging.</text>
+  <text x="56" y="540" font-size="15" fill="#5a5f86">AceTech Appliance Repair · acetech.work</text>
+</svg>
