@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 640" width="1024" height="640" font-family="Instrument Sans, Helvetica, Arial, sans-serif">
+  <title>Samsung ice maker troubleshooting map: match what you see to the most likely cause</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F6FC"/><stop offset="1" stop-color="#E2E8F6"/></linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4570B3"/></marker>
+  </defs>
+  <rect width="1024" height="640" rx="28" fill="url(#bg)"/>
+  <text x="56" y="76" font-size="30" font-weight="700" fill="#30347D">Ice maker trouble? Start with what you see</text>
+  <text x="56" y="110" font-size="19" fill="#5a5f86">Each symptom points to a different part of the system.</text>
+
+  <text x="56" y="160" font-size="15" font-weight="700" fill="#4570B3" letter-spacing="1.5">WHAT YOU SEE</text>
+  <text x="600" y="160" font-size="15" font-weight="700" fill="#4570B3" letter-spacing="1.5">MOST LIKELY CAUSE</text>
+
+  <g font-size="19">
+    <!-- row 1 -->
+    <rect x="56" y="178" width="440" height="72" rx="16" fill="#fff" stroke="#c9d3ec"/>
+    <text x="80" y="221" font-weight="700" fill="#30347D">Ice frozen into a solid block</text>
+    <path d="M500 214H592" stroke="#4570B3" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="600" y="178" width="368" height="72" rx="16" fill="#30347D"/>
+    <text x="624" y="210" font-weight="700" fill="#fff">Cold air leaking in, or a</text>
+    <text x="624" y="236" font-weight="700" fill="#fff">failed heater / sensor</text>
+
+    <!-- row 2 -->
+    <rect x="56" y="266" width="440" height="72" rx="16" fill="#fff" stroke="#c9d3ec"/>
+    <text x="80" y="309" font-weight="700" fill="#30347D">No ice at all, water works</text>
+    <path d="M500 302H592" stroke="#4570B3" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="600" y="266" width="368" height="72" rx="16" fill="#fff" stroke="#30347D" stroke-width="2"/>
+    <text x="624" y="298" font-weight="700" fill="#30347D">Frozen fill tube or ice maker</text>
+    <text x="624" y="324" font-weight="700" fill="#30347D">switched off / failed</text>
+
+    <!-- row 3 -->
+    <rect x="56" y="354" width="440" height="72" rx="16" fill="#fff" stroke="#c9d3ec"/>
+    <text x="80" y="397" font-weight="700" fill="#30347D">Small, hollow or few cubes</text>
+    <path d="M500 390H592" stroke="#4570B3" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="600" y="354" width="368" height="72" rx="16" fill="#fff" stroke="#30347D" stroke-width="2"/>
+    <text x="624" y="386" font-weight="700" fill="#30347D">Clogged water filter or weak</text>
+    <text x="624" y="412" font-weight="700" fill="#30347D">water inlet valve</text>
+
+    <!-- row 4 -->
+    <rect x="56" y="442" width="440" height="72" rx="16" fill="#fff" stroke="#c9d3ec"/>
+    <text x="80" y="485" font-weight="700" fill="#30347D">Water dripping from the chute</text>
+    <path d="M500 478H592" stroke="#4570B3" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="600" y="442" width="368" height="72" rx="16" fill="#fff" stroke="#30347D" stroke-width="2"/>
+    <text x="624" y="474" font-weight="700" fill="#30347D">Ice melting in the bucket</text>
+    <text x="624" y="500" font-weight="700" fill="#30347D">(same cause as frozen block)</text>
+
+    <!-- row 5 -->
+    <rect x="56" y="530" width="440" height="72" rx="16" fill="#fff" stroke="#c9d3ec"/>
+    <text x="80" y="573" font-weight="700" fill="#30347D">Loud fan or clicking in the door</text>
+    <path d="M500 566H592" stroke="#4570B3" stroke-width="3" marker-end="url(#ar)"/>
+    <rect x="600" y="530" width="368" height="72" rx="16" fill="#7FA6DE"/>
+    <text x="624" y="562" font-weight="700" fill="#22255C">Ice build-up hitting the</text>
+    <text x="624" y="588" font-weight="700" fill="#22255C">ice maker fan blades</text>
+  </g>
+</svg>
