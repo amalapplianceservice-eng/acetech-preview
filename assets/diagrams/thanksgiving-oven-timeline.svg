@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 560" width="1024" height="560" font-family="Instrument Sans, Helvetica, Arial, sans-serif">
+  <title>Thanksgiving oven prep timeline: two weeks before, one week before, the day before</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F6FC"/><stop offset="1" stop-color="#E2E8F6"/></linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4570B3"/><stop offset="1" stop-color="#1FA9E1"/></linearGradient>
+  </defs>
+  <rect width="1024" height="560" rx="28" fill="url(#bg)"/>
+  <text x="56" y="76" font-size="30" font-weight="700" fill="#30347D">Your Thanksgiving oven timeline</text>
+  <text x="56" y="110" font-size="19" fill="#5a5f86">Start early: a problem found two weeks out is easy to fix.</text>
+
+  <path d="M200 186H824" stroke="url(#line)" stroke-width="6" stroke-linecap="round"/>
+  <g font-weight="700" text-anchor="middle">
+    <circle cx="200" cy="186" r="26" fill="#30347D"/><text x="200" y="193" font-size="20" fill="#fff">1</text>
+    <circle cx="512" cy="186" r="26" fill="#30347D"/><text x="512" y="193" font-size="20" fill="#fff">2</text>
+    <circle cx="824" cy="186" r="26" fill="#1FA9E1"/><text x="824" y="193" font-size="20" fill="#fff">3</text>
+  </g>
+
+  <g font-size="18">
+    <rect x="56" y="236" width="288" height="270" rx="20" fill="#fff" stroke="#c9d3ec"/>
+    <text x="80" y="276" font-size="15" font-weight="700" fill="#4570B3" letter-spacing="1.5">2 WEEKS BEFORE</text>
+    <text x="80" y="312" font-weight="700" fill="#30347D">Test and plan</text>
+    <text x="80" y="350" fill="#2c3050">• Bake a test batch</text>
+    <text x="80" y="382" fill="#2c3050">• Check the temperature</text>
+    <text x="80" y="414" fill="#2c3050">• Light every burner</text>
+    <text x="80" y="446" fill="#2c3050">• Book a repair now if</text>
+    <text x="96" y="472" fill="#2c3050">anything is off</text>
+
+    <rect x="368" y="236" width="288" height="270" rx="20" fill="#fff" stroke="#c9d3ec"/>
+    <text x="392" y="276" font-size="15" font-weight="700" fill="#4570B3" letter-spacing="1.5">1 WEEK BEFORE</text>
+    <text x="392" y="312" font-weight="700" fill="#30347D">Clean and inspect</text>
+    <text x="392" y="350" fill="#2c3050">• Hand-clean, no</text>
+    <text x="408" y="376" fill="#2c3050">self-clean cycle</text>
+    <text x="392" y="408" fill="#2c3050">• Check the door gasket</text>
+    <text x="392" y="440" fill="#2c3050">• Test racks with the</text>
+    <text x="408" y="466" fill="#2c3050">roasting pan</text>
+
+    <rect x="680" y="236" width="288" height="270" rx="20" fill="#30347D"/>
+    <text x="704" y="276" font-size="15" font-weight="700" fill="#7FA6DE" letter-spacing="1.5">THE DAY BEFORE</text>
+    <text x="704" y="312" font-weight="700" fill="#fff">Set up the kitchen</text>
+    <text x="704" y="350" fill="#E2E8F6">• Make room in the fridge</text>
+    <text x="704" y="382" fill="#E2E8F6">• Empty the dishwasher</text>
+    <text x="704" y="414" fill="#E2E8F6">• Plan oven time slots</text>
+    <text x="704" y="446" fill="#E2E8F6">• Keep an oven</text>
+    <text x="720" y="472" fill="#E2E8F6">thermometer handy</text>
+  </g>
+</svg>
