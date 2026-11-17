@@ -2321,3 +2321,4 @@ a[href^="tel:"], .footer-contact, .ct-card strong, .ct-hours b { font-variant-nu
 .acq-prize-code { flex-direction: column; align-items: stretch; gap: 6px; }
 .acq-code-row { display: flex; justify-content: space-between; width: 100%; }
 .acq-code-row b { white-space: nowrap; font-size: 1.15rem; }
+.acq-spin svg { animation: acqWiggle 1s ease-in-out infinite; }

@@ -237,16 +237,36 @@
   }
   function until(item) { return new Date(item.exp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
   function bonus(id) { return BONUSES.filter(function (b) { return b.id === id; })[0]; }
+  function device() {
+    var d = store.get('device');
+    if (!d) { d = Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store.set('device', d); }
+    return d;
+  }
+  // picks a bonus the visitor doesn't have yet; the server issues the code (and logs it to the Google Sheet).
+  // resolves with the new wallet item, null when everything is collected, or 'limit' when the server says no.
   function winBonus() {
     var have = wallet(), owned = have.map(function (x) { return x.id; });
     var pool = BONUSES.filter(function (b) { return owned.indexOf(b.id) < 0; });
-    if (!pool.length) return null;
+    if (!pool.length) return Promise.resolve(null);
     var total = pool.reduce(function (n, b) { return n + b.w; }, 0), r = Math.random() * total, pick = pool[0];
     for (var i = 0; i < pool.length; i++) { r -= pool[i].w; if (r <= 0) { pick = pool[i]; break; } }
-    var item = { id: pick.id, code: 'ACE-' + pick.tag + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(), exp: Date.now() + CFG.validDays * 864e5 };
-    have.push(item);
-    store.set('wallet', JSON.stringify(have));
-    return item;
+    var data = new FormData();
+    data.append('form_type', 'quiz_code');
+    data.append('bonus', pick.id);
+    data.append('device', device());
+    data.append('page', location.pathname);
+    var timeout = new Promise(function (res) { setTimeout(function () { res({}); }, 6000); });
+    return Promise.race([Promise.resolve({ json: function () { return Promise.resolve({ ok: true }); } }).then(function (r) { return r.json(); }).catch(function () { return {}; }), timeout])
+      .then(function (res) {
+        if (res && res.error === 'limit') return 'limit';
+        // no server answer (offline / preview): local code; the claim form still registers it
+        var item = res && res.code
+          ? { id: pick.id, code: res.code, exp: res.until }
+          : { id: pick.id, code: 'ACE-' + pick.tag + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(), exp: Date.now() + CFG.validDays * 864e5 };
+        have.push(item);
+        store.set('wallet', JSON.stringify(have));
+        return item;
+      });
   }
   function collection(highlight) {
     var owned = wallet().map(function (x) { return x.id; });
@@ -272,12 +292,16 @@
     ymParams({ score: S.score + '/' + total, time_sec: sec, answers: S.answers });
     if (perfect) {
       track('quiz_perfect', { total_time_sec: sec });
-      var item = winBonus();
-      if (!item) { showWallet('all'); return; }
-      S.newBonus = item.id;
-      track('quiz_bonus_won', { bonus_id: item.id, bonuses_collected: wallet().length });
-      showWallet('won', S.score + ' / ' + total + ' correct · ' + sec + ' s');
-      confetti();
+      swap('<div class="acq-medal acq-spin">' + GIFT + '</div><p class="acq-count">' + S.score + ' / ' + total + ' correct</p>' +
+        '<h2 id="acq-title">Unlocking your <span class="accent">bonus\u2026</span></h2>');
+      winBonus().then(function (item) {
+        if (item === 'limit') { track('quiz_bonus_limit', {}); showWallet(wallet().length ? 'back' : 'limit'); return; }
+        if (!item) { showWallet('all'); return; }
+        S.newBonus = item.id;
+        track('quiz_bonus_won', { bonus_id: item.id, bonuses_collected: wallet().length });
+        showWallet('won', S.score + ' / ' + total + ' correct \u00b7 ' + sec + ' s');
+        confetti();
+      });
     } else {
       swap(
         '<p class="acq-count">' + S.score + ' / ' + total + ' correct</p>' +
@@ -295,6 +319,14 @@
   // mode: won (just won S.newBonus) | back (reopened with bonuses) | all (collected everything)
   function showWallet(mode, sub) {
     var have = wallet(), left = BONUSES.length - have.length;
+    if (!have.length) {   // 'limit' with an empty wallet (e.g. another browser on the same network)
+      S.step = 'result';
+      swap('<div class="acq-medal">' + GIFT + '</div><h2 id="acq-title">You\u2019ve hit the <span class="accent">bonus limit</span></h2>' +
+        '<p class="acq-lead">Bonuses from this connection are maxed out for now. Already have a code? Mention it when you call <a href="tel:+19259409905">(925) 940-9905</a>.</p>' +
+        '<button type="button" class="btn btn-primary btn-lg btn-block acq-book">Book a repair</button>');
+      stage.querySelector('.acq-book').addEventListener('click', function () { close('book'); var a = document.querySelector('a[href="#book"], a[data-book]'); if (a) a.click(); });
+      return;
+    }
     var item = mode === 'won' ? have[have.length - 1] : have[have.length - 1];
     S.step = 'result'; setProgress(3, true);
     var head = mode === 'won'
@@ -369,6 +401,9 @@
       var data = new FormData(form);
       data.delete('bonus');
       data.append('form_type', 'quiz');
+      data.append('bonus_code', chosen.code);
+      data.append('bonus_title', b.title);
+      data.append('bonus_until', new Date(chosen.exp || Date.now()).toISOString());
       data.append('issue', 'Quiz bonus: ' + b.title + ' \u2014 code ' + chosen.code + ' (valid until ' + until(chosen) + ')' + (have.length > 1 ? ' (also won: ' + have.filter(function (x) { return x.id !== chosen.id; }).map(function (x) { return bonus(x.id).title; }).join(', ') + ')' : ''));
       data.append('page', document.title + ' — ' + location.href);
       Promise.resolve({ json: function () { return Promise.resolve({ ok: true }); } })
