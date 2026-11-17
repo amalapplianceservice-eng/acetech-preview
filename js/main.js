@@ -679,7 +679,7 @@
       bookingModal.hidden = true;
       document.documentElement.classList.remove('no-scroll');
     };
-    document.querySelectorAll('a[href="#book"]').forEach(function (a) {
+    document.querySelectorAll('a[href="#book"], a[data-book]').forEach(function (a) {
       a.addEventListener('click', openModal);
     });
     var closeBtn = bookingModal.querySelector('.modal-close');

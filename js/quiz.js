@@ -8,7 +8,8 @@
   // ---------- settings ----------
   var CFG = {
     perRound: 3,
-    terms: 'One bonus code per repair.',
+    terms: 'One bonus code per repair. Valid for 60 days.',
+    validDays: 60,
     autoOpenDelay: 30000,     // desktop: open the invitation after 30 s on the site
     snoozeDays: 3,            // after "close", don't auto-open again for N days
     ym: 114115058
@@ -228,7 +229,12 @@
   }
 
   // ---------- bonus wallet (kept in localStorage: [{id, code}]) ----------
-  function wallet() { try { return JSON.parse(store.get('wallet') || '[]'); } catch (e) { return []; } }
+  // expired codes drop out of the wallet, so that bonus can be won again
+  function wallet() {
+    var w; try { w = JSON.parse(store.get('wallet') || '[]'); } catch (e) { w = []; }
+    return w.filter(function (x) { return !x.exp || x.exp > Date.now(); });
+  }
+  function until(item) { return new Date(item.exp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
   function bonus(id) { return BONUSES.filter(function (b) { return b.id === id; })[0]; }
   function winBonus() {
     var have = wallet(), owned = have.map(function (x) { return x.id; });
@@ -236,7 +242,7 @@
     if (!pool.length) return null;
     var total = pool.reduce(function (n, b) { return n + b.w; }, 0), r = Math.random() * total, pick = pool[0];
     for (var i = 0; i < pool.length; i++) { r -= pool[i].w; if (r <= 0) { pick = pool[i]; break; } }
-    var item = { id: pick.id, code: 'ACE-' + pick.tag + '-' + Math.random().toString(36).slice(2, 6).toUpperCase() };
+    var item = { id: pick.id, code: 'ACE-' + pick.tag + '-' + Math.random().toString(36).slice(2, 6).toUpperCase(), exp: Date.now() + CFG.validDays * 864e5 };
     have.push(item);
     store.set('wallet', JSON.stringify(have));
     return item;
@@ -253,7 +259,7 @@
     var b = bonus(item.id);
     return '<div class="acq-prize' + (fresh ? ' is-fresh' : '') + '"><span class="acq-prize-ico">' + GIFT + '</span>' +
       '<span class="acq-prize-body"><b>' + esc(b.title) + '</b><span>' + esc(b.text) + '</span></span>' +
-      '<span class="acq-prize-code"><small>Your code</small>' + item.code + '</span></div>';
+      '<span class="acq-prize-code"><small>Your code \u00b7 valid until ' + until(item) + '</small>' + item.code + '</span></div>';
   }
 
   function showResult() {
@@ -278,7 +284,7 @@
         '<button type="button" class="btn btn-outline btn-lg btn-block acq-book">Just book a repair</button>');
       stage.querySelector('.acq-retry').addEventListener('click', function () { track('quiz_retry', { previous_score: S.score }); startRound(); });
       stage.querySelector('.acq-book').addEventListener('click', function () {
-        track('quiz_book_click', { score: S.score }); close('book'); var a = document.querySelector('a[href="#book"]'); if (a) a.click();
+        track('quiz_book_click', { score: S.score }); close('book'); var a = document.querySelector('a[href="#book"], a[data-book]'); if (a) a.click();
       });
     }
   }
@@ -316,7 +322,7 @@
     var choose = have.slice().reverse().map(function (x, n) {
       var b = bonus(x.id);
       return '<label class="acq-pick"><input type="radio" name="bonus" value="' + x.id + '"' + (n === 0 ? ' checked' : '') + '>' +
-        '<span><b>' + esc(b.title) + '</b><small>' + x.code + '</small></span></label>';
+        '<span><b>' + esc(b.title) + '</b><small>' + x.code + ' \u00b7 valid until ' + until(x) + '</small></span></label>';
     }).join('');
     swap(
       '<span class="acq-eyebrow">' + GIFT + ' ' + (have.length > 1 ? 'Pick one bonus' : 'Bonus ' + have[0].code) + '</span>' +
@@ -354,7 +360,7 @@
       var data = new FormData(form);
       data.delete('bonus');
       data.append('form_type', 'quiz');
-      data.append('issue', 'Quiz bonus: ' + b.title + ' \u2014 code ' + chosen.code + (have.length > 1 ? ' (also won: ' + have.filter(function (x) { return x.id !== chosen.id; }).map(function (x) { return bonus(x.id).title; }).join(', ') + ')' : ''));
+      data.append('issue', 'Quiz bonus: ' + b.title + ' \u2014 code ' + chosen.code + ' (valid until ' + until(chosen) + ')' + (have.length > 1 ? ' (also won: ' + have.filter(function (x) { return x.id !== chosen.id; }).map(function (x) { return bonus(x.id).title; }).join(', ') + ')' : ''));
       data.append('page', document.title + ' — ' + location.href);
       Promise.resolve({ json: function () { return Promise.resolve({ ok: true }); } })
         .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })

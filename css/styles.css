@@ -2303,3 +2303,9 @@ a[href^="tel:"], .footer-contact, .ct-card strong, .ct-hours b { font-variant-nu
   .hero-trust li { font-size: .8rem; }
   .hero-trust strong { font-size: 1rem; }
 }
+
+/* Book Online page: form first, reasons on the side */
+.bk-grid { grid-template-columns: 1.25fr 1fr; }
+.bk-side { grid-template-columns: 1fr; align-content: start; }
+.bk-why .sv-book-points { margin: 10px 0 0; }
+@media (max-width: 960px) { .bk-grid { grid-template-columns: 1fr; } }
