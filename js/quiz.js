@@ -260,7 +260,9 @@
     var b = bonus(item.id);
     return '<div class="acq-prize' + (fresh ? ' is-fresh' : '') + '"><span class="acq-prize-ico">' + GIFT + '</span>' +
       '<span class="acq-prize-body"><b>' + esc(b.title) + '</b><span>' + esc(b.text) + '</span></span>' +
-      '<span class="acq-prize-code"><small>Your code \u00b7 valid until ' + until(item) + '</small>' + item.code + '</span></div>';
+      '<span class="acq-prize-code"><small>Your code \u00b7 valid until ' + until(item) + '</small><span class="acq-code-row"><b>' + item.code + '</b>' +
+      '<button type="button" class="acq-copy" data-code="' + item.code + '">Copy</button></span></span></div>' +
+      '<p class="acq-hint">Save it: show this code to your technician or mention it when you call <a href="tel:+19259409905">(925) 940-9905</a>.</p>';
   }
 
   function showResult() {
@@ -312,6 +314,12 @@
       (left ? '<button type="button" class="btn btn-outline btn-lg btn-block acq-again">Play again for another bonus</button>' : '') +
       '<p class="acq-terms">' + esc(CFG.terms) + '</p>');
     stage.querySelector('.acq-claim').addEventListener('click', showForm);
+    var copy = stage.querySelector('.acq-copy');
+    if (copy) copy.addEventListener('click', function () {
+      var c = copy.getAttribute('data-code');
+      var done = function () { copy.textContent = 'Copied!'; copy.classList.add('is-done'); track('quiz_code_copy', { bonus_id: item.id }); };
+      if (navigator.clipboard) navigator.clipboard.writeText(c).then(done, done); else done();
+    });
     var again = stage.querySelector('.acq-again');
     if (again) again.addEventListener('click', function () { track('quiz_play_again', { bonuses_collected: have.length }); startRound(); });
   }
