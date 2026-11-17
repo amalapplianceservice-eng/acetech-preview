@@ -198,7 +198,8 @@
       '<button type="button" class="btn btn-primary btn-lg btn-block acq-next" hidden></button>');
     S.shownAt = Date.now();
     stage.querySelectorAll('.acq-opt').forEach(function (b) { b.addEventListener('click', function () { answer(q, Number(b.getAttribute('data-k'))); }); });
-    var first = stage.querySelector('.acq-opt'); if (first) first.focus({ preventScroll: true });
+    // keyboard users get focus on the first answer; mouse/touch users see no pre-selected look
+    if (S.kbd) { var first = stage.querySelector('.acq-opt'); if (first) first.focus({ preventScroll: true }); }
   }
 
   function answer(q, k) {
@@ -225,7 +226,7 @@
     next.addEventListener('click', function () { if (last) showResult(); else { S.i++; showQuestion(); } });
     setProgress(S.i + 1, true);
     track('quiz_answer', { question_id: q.id, question_number: S.i + 1, correct: ok, time_on_question_sec: secs(ms) });
-    setTimeout(function () { next.focus({ preventScroll: true }); }, 50);
+    if (S.kbd) setTimeout(function () { next.focus({ preventScroll: true }); }, 50);
   }
 
   // ---------- bonus wallet (kept in localStorage: [{id, code}]) ----------
@@ -411,7 +412,7 @@
     launcher.classList.add('is-hidden');
     track('quiz_open', { trigger: trigger });
     if (wallet().length && !store.get('claimed')) showWallet('back'); else showIntro();
-    setTimeout(function () { var b = dialog.querySelector('.acq-start, .acq-claim, .acq-opt'); if (b) b.focus({ preventScroll: true }); }, 60);
+    if (S.kbd) setTimeout(function () { var b = dialog.querySelector('.acq-start, .acq-claim, .acq-opt'); if (b) b.focus({ preventScroll: true }); }, 60);
   }
   function close(how) {
     if (overlay.hidden) return;
@@ -426,7 +427,9 @@
   launcher.addEventListener('click', function () { open('button'); });
   overlay.querySelector('.acq-close').addEventListener('click', function () { close('x'); });
   overlay.addEventListener('click', function (e) { if (e.target === overlay) close('backdrop'); });
+  document.addEventListener('pointerdown', function () { S.kbd = false; });
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Tab' || e.key === 'Enter') S.kbd = true;
     if (overlay.hidden) return;
     if (e.key === 'Escape') close('esc');
     if (e.key === 'Tab') {  // keep focus inside the dialog
