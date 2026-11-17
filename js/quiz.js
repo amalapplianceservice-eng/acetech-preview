@@ -8,13 +8,25 @@
   // ---------- settings ----------
   var CFG = {
     perRound: 3,
-    // the reward is still being decided with the client: change the texts here
-    bonusTitle: 'Your AceTech bonus',
-    bonusText: 'Leave your number and we’ll apply your bonus to your next repair.',
+    terms: 'One bonus code per repair.',
     autoOpenDelay: 30000,     // desktop: open the invitation after 30 s on the site
     snoozeDays: 3,            // after "close", don't auto-open again for N days
     ym: 114115058
   };
+
+  // ---------- bonuses: a perfect round wins one at random (never the same twice); w = relative chance ----------
+  var BONUSES = [
+    { id: 'free_diagnostic', tag: 'DX', w: 1, title: 'Free Diagnostic',
+      text: 'We waive the diagnostic fee on your service call.' },
+    { id: 'labor_20', tag: 'L20', w: 1, title: '20% Off Labor',
+      text: '20% off the labor on your repair. Parts not included.' },
+    { id: 'extra_units', tag: 'MU', w: 1, title: 'Free Diagnostics on Extra Appliances',
+      text: 'More than one appliance acting up? We diagnose the 2nd, 3rd and every other one on the same visit for free.' },
+    { id: 'year_diagnostics', tag: 'YR', w: 1, title: 'A Year of Free Diagnostics',
+      text: 'Repair one appliance with us and get free diagnostics on any other appliance in your home for 12 months.' },
+    { id: 'warranty_1y', tag: 'WX', w: 1, title: '1-Year Repair Warranty',
+      text: 'Your warranty on parts and labor goes from 180 days to a full year.' }
+  ];
 
   // c = index of the correct option (or array of indexes); fixed = keep option order (e.g. "All three")
   // cat: tech | brand | fun  (a round = 2 tech + 1 from brand/fun, in random order)
@@ -155,8 +167,8 @@
     swap(
       '<span class="acq-eyebrow">' + GIFT + ' 30-second challenge</span>' +
       '<h2 id="acq-title">Think you know <span class="accent">appliances?</span></h2>' +
-      '<p class="acq-lead">Answer 3 quick questions from our technicians. Get them all right and unlock a bonus on your next repair.</p>' +
-      '<ul class="acq-perks"><li>3 random questions</li><li>Instant answers from pros</li><li>No sign-up to play</li></ul>' +
+      '<p class="acq-lead">Answer 3 quick questions from our technicians. Get them all right and win a bonus on your repair.</p>' +
+      '<ul class="acq-perks"><li>Win 1 of ' + BONUSES.length + ' repair bonuses, like 20% off labor</li><li>Play again to unlock a different one</li><li>Instant answers from pros, no sign-up</li></ul>' +
       '<button type="button" class="btn btn-primary btn-lg btn-block acq-start">Start the quiz</button>' +
       '<p class="acq-fine">Takes about 30 seconds.</p>');
     stage.querySelector('.acq-start').addEventListener('click', startRound);
@@ -215,10 +227,33 @@
     setTimeout(function () { next.focus({ preventScroll: true }); }, 50);
   }
 
-  function code() {
-    var c = store.get('code');
-    if (!c) { c = 'ACE-' + Math.random().toString(36).slice(2, 6).toUpperCase(); store.set('code', c); }
-    return c;
+  // ---------- bonus wallet (kept in localStorage: [{id, code}]) ----------
+  function wallet() { try { return JSON.parse(store.get('wallet') || '[]'); } catch (e) { return []; } }
+  function bonus(id) { return BONUSES.filter(function (b) { return b.id === id; })[0]; }
+  function winBonus() {
+    var have = wallet(), owned = have.map(function (x) { return x.id; });
+    var pool = BONUSES.filter(function (b) { return owned.indexOf(b.id) < 0; });
+    if (!pool.length) return null;
+    var total = pool.reduce(function (n, b) { return n + b.w; }, 0), r = Math.random() * total, pick = pool[0];
+    for (var i = 0; i < pool.length; i++) { r -= pool[i].w; if (r <= 0) { pick = pool[i]; break; } }
+    var item = { id: pick.id, code: 'ACE-' + pick.tag + '-' + Math.random().toString(36).slice(2, 6).toUpperCase() };
+    have.push(item);
+    store.set('wallet', JSON.stringify(have));
+    return item;
+  }
+  function collection(highlight) {
+    var owned = wallet().map(function (x) { return x.id; });
+    return '<div class="acq-collect" aria-label="Bonuses collected"><span class="acq-collect-label">Bonuses collected: <b>' + owned.length + ' of ' + BONUSES.length + '</b></span><div class="acq-collect-dots">' +
+      BONUSES.slice().sort(function (x, y) { return (owned.indexOf(x.id) < 0) - (owned.indexOf(y.id) < 0); }).map(function (b) {
+        var got = owned.indexOf(b.id) > -1;
+        return '<span class="acq-dot' + (got ? ' is-got' : '') + (b.id === highlight ? ' is-new' : '') + '" title="' + (got ? esc(b.title) : 'Locked bonus') + '">' + (got ? GIFT : '?') + '</span>';
+      }).join('') + '</div></div>';
+  }
+  function prizeCard(item, fresh) {
+    var b = bonus(item.id);
+    return '<div class="acq-prize' + (fresh ? ' is-fresh' : '') + '"><span class="acq-prize-ico">' + GIFT + '</span>' +
+      '<span class="acq-prize-body"><b>' + esc(b.title) + '</b><span>' + esc(b.text) + '</span></span>' +
+      '<span class="acq-prize-code"><small>Your code</small>' + item.code + '</span></div>';
   }
 
   function showResult() {
@@ -227,22 +262,18 @@
     track('quiz_complete', { score: S.score, total: total, perfect: perfect, total_time_sec: sec });
     ymParams({ score: S.score + '/' + total, time_sec: sec, answers: S.answers });
     if (perfect) {
-      store.set('won', '1');
       track('quiz_perfect', { total_time_sec: sec });
-      swap(
-        '<div class="acq-medal">' + GIFT + '</div>' +
-        '<p class="acq-count">' + S.score + ' / ' + total + ' correct · ' + sec + ' s</p>' +
-        '<h2 id="acq-title">You know your <span class="accent">appliances!</span></h2>' +
-        '<div class="acq-bonus"><span>' + esc(CFG.bonusTitle) + '</span><b>' + code() + '</b></div>' +
-        '<p class="acq-lead">' + esc(CFG.bonusText) + '</p>' +
-        '<button type="button" class="btn btn-primary btn-lg btn-block acq-claim">Claim my bonus</button>');
+      var item = winBonus();
+      if (!item) { showWallet('all'); return; }
+      S.newBonus = item.id;
+      track('quiz_bonus_won', { bonus_id: item.id, bonuses_collected: wallet().length });
+      showWallet('won', S.score + ' / ' + total + ' correct · ' + sec + ' s');
       confetti();
-      stage.querySelector('.acq-claim').addEventListener('click', showForm);
     } else {
       swap(
         '<p class="acq-count">' + S.score + ' / ' + total + ' correct</p>' +
         '<h2 id="acq-title">' + (S.score === total - 1 ? 'So close!' : S.score ? 'Good try!' : 'Tough round!') + ' <span class="accent">Try again?</span></h2>' +
-        '<p class="acq-lead">You need all 3 right to unlock the bonus. Every round has new questions.</p>' +
+        '<p class="acq-lead">Get all 3 right to win one of ' + BONUSES.length + ' repair bonuses. Every round has new questions.</p>' +
         '<button type="button" class="btn btn-primary btn-lg btn-block acq-retry">Play another round</button>' +
         '<button type="button" class="btn btn-outline btn-lg btn-block acq-book">Just book a repair</button>');
       stage.querySelector('.acq-retry').addEventListener('click', function () { track('quiz_retry', { previous_score: S.score }); startRound(); });
@@ -252,14 +283,47 @@
     }
   }
 
+  // mode: won (just won S.newBonus) | back (reopened with bonuses) | all (collected everything)
+  function showWallet(mode, sub) {
+    var have = wallet(), left = BONUSES.length - have.length;
+    var item = mode === 'won' ? have[have.length - 1] : have[have.length - 1];
+    S.step = 'result'; setProgress(3, true);
+    var head = mode === 'won'
+      ? '<p class="acq-count">' + esc(sub || '') + '</p><h2 id="acq-title">You won a <span class="accent">bonus!</span></h2>'
+      : mode === 'all'
+        ? '<h2 id="acq-title">You unlocked <span class="accent">every bonus!</span></h2>'
+        : '<h2 id="acq-title">Your bonuses are <span class="accent">waiting</span></h2>';
+    var pitch = left
+      ? '<p class="acq-lead">' + (mode === 'won' ? 'Feeling lucky? ' : '') + 'Play another round to unlock a different bonus, ' + left + ' more to collect. Then pick the one you like best.</p>'
+      : '<p class="acq-lead">You\u2019ve collected all ' + BONUSES.length + '. Pick the one that helps you most.</p>';
+    swap(
+      '<div class="acq-medal">' + GIFT + '</div>' + head +
+      prizeCard(item, mode === 'won') +
+      collection(mode === 'won' ? item.id : '') +
+      pitch +
+      '<button type="button" class="btn btn-primary btn-lg btn-block acq-claim">' + (have.length > 1 ? 'Choose and claim my bonus' : 'Claim this bonus') + '</button>' +
+      (left ? '<button type="button" class="btn btn-outline btn-lg btn-block acq-again">Play again for another bonus</button>' : '') +
+      '<p class="acq-terms">' + esc(CFG.terms) + '</p>');
+    stage.querySelector('.acq-claim').addEventListener('click', showForm);
+    var again = stage.querySelector('.acq-again');
+    if (again) again.addEventListener('click', function () { track('quiz_play_again', { bonuses_collected: have.length }); startRound(); });
+  }
+
   function showForm() {
     S.step = 'form';
-    track('quiz_form_view', {});
+    var have = wallet();
+    track('quiz_form_view', { bonuses_collected: have.length });
+    var choose = have.slice().reverse().map(function (x, n) {
+      var b = bonus(x.id);
+      return '<label class="acq-pick"><input type="radio" name="bonus" value="' + x.id + '"' + (n === 0 ? ' checked' : '') + '>' +
+        '<span><b>' + esc(b.title) + '</b><small>' + x.code + '</small></span></label>';
+    }).join('');
     swap(
-      '<span class="acq-eyebrow">' + GIFT + ' Bonus ' + code() + '</span>' +
+      '<span class="acq-eyebrow">' + GIFT + ' ' + (have.length > 1 ? 'Pick one bonus' : 'Bonus ' + have[0].code) + '</span>' +
       '<h2 id="acq-title">Where should we <span class="accent">send it?</span></h2>' +
-      '<p class="acq-lead">We’ll call you to confirm your bonus and book a time that works for you.</p>' +
+      '<p class="acq-lead">We\u2019ll call you to confirm your bonus and book a time that works for you.</p>' +
       '<form class="acq-form" novalidate>' +
+      (have.length > 1 ? '<fieldset class="acq-picks"><legend>Your bonus for this repair <small>(' + esc(CFG.terms.replace(/\.$/, '')) + ')</small></legend>' + choose + '</fieldset>' : '') +
       '  <div class="hp-field" aria-hidden="true" style="position:absolute;left:-9999px;height:0;overflow:hidden"><label>Company<input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>' +
       '  <div class="field"><label for="acq-name">Name</label><input id="acq-name" name="name" autocomplete="name" placeholder="Your Name" required></div>' +
       '  <div class="field"><label for="acq-phone">Phone Number</label><input id="acq-phone" name="phone" type="tel" autocomplete="tel" placeholder="Your Number" required></div>' +
@@ -285,22 +349,25 @@
       form.querySelector('.acq-error').hidden = !bad;
       if (bad) return;
       var btn = form.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Sending…';
+      var have = wallet(), picked = (form.querySelector('input[name=bonus]:checked') || {}).value || have[0].id;
+      var chosen = have.filter(function (x) { return x.id === picked; })[0], b = bonus(chosen.id);
       var data = new FormData(form);
+      data.delete('bonus');
       data.append('form_type', 'quiz');
-      data.append('issue', 'Quiz bonus ' + code() + ' (' + S.score + '/' + S.round.length + ' correct)');
+      data.append('issue', 'Quiz bonus: ' + b.title + ' \u2014 code ' + chosen.code + (have.length > 1 ? ' (also won: ' + have.filter(function (x) { return x.id !== chosen.id; }).map(function (x) { return bonus(x.id).title; }).join(', ') + ')' : ''));
       data.append('page', document.title + ' — ' + location.href);
       Promise.resolve({ json: function () { return Promise.resolve({ ok: true }); } })
         .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
         .then(function (res) {
           if (!res || !res.ok) throw new Error('send');
-          track('quiz_lead_submit', { score: S.score });
+          track('quiz_lead_submit', { bonus_id: chosen.id, bonuses_collected: have.length });
           try { if (window.gtag) window.gtag('event', 'form_get_quote_success', { app_name: 'AceTech', form: 'quiz' }); } catch (err) { /* ignore */ }
           store.set('claimed', '1');
           S.step = 'done';
           swap(
             '<div class="acq-medal is-ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.2 4.2L19 7"/></svg></div>' +
             '<h2 id="acq-title">Bonus <span class="accent">saved!</span></h2>' +
-            '<p class="acq-lead">We’ll call you shortly to confirm. Your code: <b>' + code() + '</b>. Need help right now? Call <a href="tel:+19259409905">(925) 940-9905</a>.</p>' +
+            '<p class="acq-lead">We\u2019ll call you shortly to confirm your <b>' + esc(b.title) + '</b> (code <b>' + chosen.code + '</b>). Need help right now? Call <a href="tel:+19259409905">(925) 940-9905</a>.</p>' +
             '<button type="button" class="btn btn-primary btn-lg btn-block acq-done">Back to the site</button>');
           stage.querySelector('.acq-done').addEventListener('click', function () { close('done'); });
         })
@@ -337,18 +404,8 @@
     document.documentElement.classList.add('no-scroll');
     launcher.classList.add('is-hidden');
     track('quiz_open', { trigger: trigger });
-    if (store.get('won') && !store.get('claimed')) showResultWon(); else showIntro();
+    if (wallet().length && !store.get('claimed')) showWallet('back'); else showIntro();
     setTimeout(function () { var b = dialog.querySelector('.acq-start, .acq-claim, .acq-opt'); if (b) b.focus({ preventScroll: true }); }, 60);
-  }
-  function showResultWon() {
-    S.step = 'result'; setProgress(3, true);
-    swap(
-      '<div class="acq-medal">' + GIFT + '</div>' +
-      '<h2 id="acq-title">Your bonus is <span class="accent">waiting</span></h2>' +
-      '<div class="acq-bonus"><span>' + esc(CFG.bonusTitle) + '</span><b>' + code() + '</b></div>' +
-      '<p class="acq-lead">' + esc(CFG.bonusText) + '</p>' +
-      '<button type="button" class="btn btn-primary btn-lg btn-block acq-claim">Claim my bonus</button>');
-    stage.querySelector('.acq-claim').addEventListener('click', showForm);
   }
   function close(how) {
     if (overlay.hidden) return;
