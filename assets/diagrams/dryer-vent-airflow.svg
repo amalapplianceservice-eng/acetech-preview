@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 576" width="1024" height="576" font-family="Instrument Sans, Helvetica, Arial, sans-serif">
+  <title>Where lint builds up in a dryer vent: lint screen, the duct behind the dryer and the outside vent cap</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F6FC"/><stop offset="1" stop-color="#E2E8F6"/></linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4570B3"/></marker>
+  </defs>
+  <rect width="1024" height="576" rx="28" fill="url(#bg)"/>
+  <text x="56" y="76" font-size="30" font-weight="700" fill="#30347D">Where the lint hides</text>
+  <text x="56" y="110" font-size="19" fill="#5a5f86">Hot, damp air travels from the drum to the outside. Lint collects at three points.</text>
+
+  <!-- dryer -->
+  <rect x="70" y="170" width="250" height="300" rx="22" fill="#fff" stroke="#30347D" stroke-width="2"/>
+  <rect x="70" y="170" width="250" height="56" rx="22" fill="#30347D"/>
+  <rect x="70" y="200" width="250" height="26" fill="#30347D"/>
+  <circle cx="195" cy="335" r="80" fill="#E2E8F6" stroke="#30347D" stroke-width="2"/>
+  <circle cx="195" cy="335" r="56" fill="#fff" stroke="#c9d3ec"/>
+  <text x="195" y="204" font-size="17" font-weight="700" fill="#fff" text-anchor="middle">DRYER</text>
+  <text x="195" y="341" font-size="15" fill="#5a5f86" text-anchor="middle">drum</text>
+
+  <!-- duct -->
+  <path d="M320 400 C 420 400, 420 300, 520 300 S 640 300, 700 300 L 800 300" fill="none" stroke="#c9d3ec" stroke-width="44" stroke-linecap="round"/>
+  <path d="M320 400 C 420 400, 420 300, 520 300 S 640 300, 700 300 L 800 300" fill="none" stroke="#7FA6DE" stroke-width="3" stroke-dasharray="10 9" marker-end="url(#ar)"/>
+  <!-- wall -->
+  <rect x="820" y="160" width="34" height="320" fill="#30347D"/>
+  <text x="837" y="150" font-size="14" font-weight="700" fill="#30347D" text-anchor="middle">WALL</text>
+  <!-- vent cap -->
+  <rect x="854" y="276" width="70" height="48" rx="6" fill="#fff" stroke="#30347D" stroke-width="2"/>
+  <path d="M866 290 h46 M866 300 h46 M866 310 h46" stroke="#30347D" stroke-width="2"/>
+
+  <!-- lint spots -->
+  <g font-size="16" font-weight="700">
+    <circle cx="195" cy="250" r="18" fill="#1FA9E1"/><text x="195" y="256" fill="#fff" text-anchor="middle">1</text>
+    <circle cx="455" cy="350" r="18" fill="#1FA9E1"/><text x="455" y="356" fill="#fff" text-anchor="middle">2</text>
+    <circle cx="890" cy="250" r="18" fill="#1FA9E1"/><text x="890" y="256" fill="#fff" text-anchor="middle">3</text>
+  </g>
+  <g font-size="16" fill="#2c3050">
+    <text x="70" y="510" font-weight="700" fill="#30347D">1  Lint screen</text>
+    <text x="70" y="534">Clean after every load</text>
+    <text x="380" y="510" font-weight="700" fill="#30347D">2  Duct behind the dryer</text>
+    <text x="380" y="534">Crushed or long ducts trap lint</text>
+    <text x="700" y="510" font-weight="700" fill="#30347D">3  Outside vent cap</text>
+    <text x="700" y="534">Flap should open wide when it runs</text>
+  </g>
+</svg>
